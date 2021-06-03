@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Add New Contact | Contact App</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col">
+                <a href="/" class="btn btn-secondary btn-sm float-right mt-3">Back</a>
+                <h1 class="mb-4">Contact App</h1>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" name="name" id="name" class="form-control" placeholder="Enter name">
+                        </div>
+                        <div class="form-group">
+                            <label for="number">Number</label>
+                            <input type="text" number="number" id="number" class="form-control"
+                                placeholder="Enter number">
+                        </div>
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const queryStrings = new URLSearchParams(location.search);
+        const id = queryStrings.get('id');
+
+        const submit = document.querySelector('.btn-primary');
+        const name = document.getElementById('name');
+        const number = document.getElementById('number');
+
+        submit.addEventListener('click', function () {
+            if (!name.value || !number.value) {
+                alert('Please complete the form');
+                return;
+            }
+
+            const options = {
+                method: id ? 'PUT' : 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify({ id, name: name.value, number: number.value })
+            };
+
+            fetch(`http://localhost:4000/api/contacts/${id || ''}`, options)
+                .then(response => response.json())
+                .then(contact => {
+                    location.href = '/'
+                })
+                .catch(error => alert(error))
+        })
+
+        if (id) {
+            fetch(`http://localhost:4000/api/contacts/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`[${response.status}] ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(contact => {
+                    name.value = contact.name;
+                    number.value = contact.number;
+                })
+                .catch(error => alert(error))
+        }
+    </script>
+</body>
+
+</html>
